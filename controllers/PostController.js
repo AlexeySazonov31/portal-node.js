@@ -15,7 +15,7 @@ export const getLastTags = async (req, res) => {
 
 export const getAll = async (req, res) => {
     try {
-        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").exec();
+        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({'updatedAt': -1}).exec();
         res.json(posts);
     } catch (error) {
         console.log(error)
