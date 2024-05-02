@@ -1,5 +1,18 @@
 import PostModel from "../models/Post.js";
 
+export const getLastTags = async (req, res) => {
+    try {
+        const posts = await PostModel.find().limit(5).exec();
+        const tags = posts.map(elem => elem.tags).flat().slice(0, 5);
+        res.json(tags);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Couldn't get the articles",
+        })
+    }
+}
+
 export const getAll = async (req, res) => {
     try {
         const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").exec();
@@ -26,7 +39,7 @@ export const getOne = async (req, res) => {
                 new: true,
             },
         ).populate("user", "fullName email avatarUrl createdAt").exec();
-        if(!post){
+        if (!post) {
             return res.status(500).json({
                 message: "Couldn't find the article",
             })
@@ -50,7 +63,7 @@ export const remove = async (req, res) => {
             },
         );
 
-        if(!post){
+        if (!post) {
             return res.status(500).json({
                 message: "Couldn't find the article",
             })
