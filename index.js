@@ -2,16 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
 import cors from "cors";
+import 'dotenv/config'
 
 import { registerValidation, loginValidation, postCreateValidation } from "./validations.js";
 import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handleValidationsErrors } from "./utils/index.js";
 
-const port = 4444;
-const uriDB = "mongodb://localhost:27017/blog";
-
 mongoose
-    .connect(uriDB)
+    .connect(process.env.DB_CONN)
     .then(() => console.log("DataBase - OK"))
     .catch((err) => console.log("DataBase error: ", err));
 
@@ -56,9 +54,9 @@ app.delete("/posts/:id", checkAuth, PostController.remove);
 
 
 
-app.listen(port, (err) => {
+app.listen(process.env.PORT , (err) => {
     if (err) {
         return console.log(err);
     }
-    console.log("Server - OK, port: " + port);
+    console.log("Server - OK, port: " + process.env.PORT);
 })

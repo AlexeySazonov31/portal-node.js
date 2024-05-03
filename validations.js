@@ -15,6 +15,6 @@ export const loginValidation = [
 export const postCreateValidation = [
     body("title", "Input post title").isLength({ min: 3 }).isString(),
     body("text", "Input post text").isLength({ min: 10 }).isString(),
-    body("tags", "Invalid tag format (specify an array)").optional().isArray(),
-    body("imageUrl", "Incorrect url to post picture").optional().isString(),
+    body("tags", "Invalid tag format (specify an array)").isArray(),
+    body("imageUrl", "Incorrect url to post picture").isString(),
 ];
