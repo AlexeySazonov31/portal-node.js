@@ -15,16 +15,25 @@ mongoose
 
 const app = express();
 
-const storage = multer.diskStorage({
+const postsStorage = multer.diskStorage({
     destination: (_, __, cb) => {
-        cb(null, "uploads");
+        cb(null, "uploads/posts");
     },
     filename: (_, file, cb) => {
         cb(null, file.originalname);
     },
 })
+const avatarsStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "./uploads/avatars");
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    },
+})
 
-const upload = multer({ storage });
+const uploadPost = multer({ storage: postsStorage });
+const uploadAvatar = multer({ storage: avatarsStorage });
 
 app.use(express.json());
 app.use(cors());
@@ -38,13 +47,19 @@ app.post("/auth/login", loginValidation, handleValidationsErrors, UserController
 app.post("/auth/register", registerValidation, handleValidationsErrors, UserController.register);
 app.get("/auth/me", checkAuth, UserController.getMe);
 
-app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
+app.post("/upload/post", checkAuth, uploadPost.single("image"), (req, res) => {
     res.json({
-        url: `/uploads/${req.file.originalname}`,
+        url: req.file.originalname,
+    })
+});
+app.post("/upload/avatar", checkAuth, uploadAvatar.single("image"), (req, res) => {
+    res.json({
+        url: `/uploads/avatars/${req.file.originalname}`,
     })
 });
 
 app.get("/posts", PostController.getAll);
+app.get("/posts/popular", PostController.getPopular);
 app.get("/tags", PostController.getLastTags);
 app.get("/posts/:id", PostController.getOne);
 
@@ -54,7 +69,7 @@ app.delete("/posts/:id", checkAuth, PostController.remove);
 
 
 
-app.listen(process.env.PORT , (err) => {
+app.listen(process.env.PORT, (err) => {
     if (err) {
         return console.log(err);
     }

@@ -1,4 +1,5 @@
 import PostModel from "../models/Post.js";
+import fs from "fs";
 
 export const getLastTags = async (req, res) => {
     try {
@@ -15,7 +16,19 @@ export const getLastTags = async (req, res) => {
 
 export const getAll = async (req, res) => {
     try {
-        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({'updatedAt': -1}).exec();
+        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({ 'updatedAt': -1 }).exec();
+        res.json(posts);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Couldn't get the articles",
+        })
+    }
+}
+
+export const getPopular = async (req, res) => {
+    try {
+        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({ 'viewsCount': -1 }).exec();
         res.json(posts);
     } catch (error) {
         console.log(error)
@@ -67,7 +80,11 @@ export const remove = async (req, res) => {
             return res.status(500).json({
                 message: "Couldn't find the article",
             })
+        } else if (post.imageUrl !== "") {
+            const filePath = import.meta.dirname + "/.." + post.imageUrl;
+            fs.unlinkSync(filePath);
         }
+
 
         res.json({
             success: true,
@@ -105,10 +122,8 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
     try {
-
         const postId = req.params.id;
-
-        await PostModel.updateOne(
+        const post = await PostModel.findOneAndUpdate(
             {
                 _id: postId,
             },
@@ -119,7 +134,16 @@ export const update = async (req, res) => {
                 imageUrl: req.body.imageUrl,
                 user: req.userId,
             },
+            {
+                new: false,
+            },
         );
+        // get old post and compare imageUrl 
+        // (if different - remove old image file)
+        if (post.imageUrl !== "" && post.imageUrl !== req.body.imageUrl) {
+            const filePath = import.meta.dirname + "/.." + post.imageUrl;
+            fs.unlinkSync(filePath);
+        }
         res.json({
             success: true,
         })
