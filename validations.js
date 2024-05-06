@@ -18,3 +18,6 @@ export const postCreateValidation = [
     body("tags", "Invalid tag format (specify an array)").isArray(),
     body("imageUrl", "Incorrect url to post picture").isString(),
 ];
+export const commentCreateValidation = [
+    body("text", "Input post text").isLength({ min: 1 }).isString(),
+];

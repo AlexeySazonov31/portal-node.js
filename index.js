@@ -4,8 +4,8 @@ import multer from "multer";
 import cors from "cors";
 import 'dotenv/config'
 
-import { registerValidation, loginValidation, postCreateValidation } from "./validations.js";
-import { UserController, PostController } from "./controllers/index.js";
+import { registerValidation, loginValidation, postCreateValidation, commentCreateValidation } from "./validations.js";
+import { UserController, PostController, CommController } from "./controllers/index.js";
 import { checkAuth, handleValidationsErrors } from "./utils/index.js";
 
 mongoose
@@ -67,6 +67,10 @@ app.get("/posts/:id", PostController.getOne);
 app.post("/posts", checkAuth, postCreateValidation, handleValidationsErrors, PostController.create);
 app.patch("/posts/:id", checkAuth, postCreateValidation, handleValidationsErrors, PostController.update);
 app.delete("/posts/:id", checkAuth, PostController.remove);
+
+app.get("/comment/:id", CommController.getCommentsByPost);
+app.post("/comment/:id", checkAuth, commentCreateValidation, handleValidationsErrors, CommController.createComment);
+
 
 
 
