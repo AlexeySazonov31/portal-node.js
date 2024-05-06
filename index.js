@@ -68,8 +68,9 @@ app.post("/posts", checkAuth, postCreateValidation, handleValidationsErrors, Pos
 app.patch("/posts/:id", checkAuth, postCreateValidation, handleValidationsErrors, PostController.update);
 app.delete("/posts/:id", checkAuth, PostController.remove);
 
-app.get("/comment/:id", CommController.getCommentsByPost);
-app.post("/comment/:id", checkAuth, commentCreateValidation, handleValidationsErrors, CommController.createComment);
+app.get("/comments/:id", CommController.getCommentsByPost);
+app.post("/comments/:id", checkAuth, commentCreateValidation, handleValidationsErrors, CommController.createComment);
+app.delete("/comments/:id", checkAuth, CommController.removeComment);
 
 
 

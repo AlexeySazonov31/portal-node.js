@@ -1,4 +1,5 @@
 import PostModel from "../models/Post.js";
+import CommentModel from "../models/Commentary.js";
 import fs from "fs";
 
 export const getLastTags = async (req, res) => {
@@ -14,10 +15,18 @@ export const getLastTags = async (req, res) => {
     }
 }
 
+// !!! !!! think about another way to get the number of comments !!! !!!
 export const getAll = async (req, res) => {
     try {
-        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({ 'updatedAt': -1 }).exec();
-        res.json(posts);
+        const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({ 'createdAt': -1 }).exec();
+        let postsAndCountOfComments = [];
+        for (let post of posts) {
+            const countComments = await CommentModel.countDocuments({
+                post: post._id,
+            }).exec();
+            postsAndCountOfComments.push({ ...post._doc, countComments });
+        }
+        res.json(postsAndCountOfComments);
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -26,15 +35,22 @@ export const getAll = async (req, res) => {
     }
 }
 
+// !!! !!! think about another way to get the number of comments !!! !!!
 export const getAllByTag = async (req, res) => {
     try {
         const postId = req.params.tag;
         const posts = await PostModel.find({
             tags: postId,
-        }).populate("user", "fullName email avatarUrl createdAt").sort({ 'updatedAt': -1 }).exec();
-        
-        if(posts.length){
-            res.json(posts);
+        }).populate("user", "fullName email avatarUrl createdAt").sort({ 'createdAt': -1 }).exec();
+        if (posts.length) {
+            let postsAndCountOfComments = [];
+            for (let post of posts) {
+                const countComments = await CommentModel.countDocuments({
+                    post: post._id,
+                }).exec();
+                postsAndCountOfComments.push({ ...post._doc, countComments });
+            }
+            res.json(postsAndCountOfComments);
         } else {
             res.status(404).json({
                 message: "Couldn't get the articles",
@@ -48,11 +64,18 @@ export const getAllByTag = async (req, res) => {
     }
 }
 
+// !!! !!! think about another way to get the number of comments !!! !!!
 export const getPopular = async (req, res) => {
     try {
         const posts = await PostModel.find().populate("user", "fullName email avatarUrl createdAt").sort({ 'viewsCount': -1 }).exec();
-        res.json(posts);
-    } catch (error) {
+        let postsAndCountOfComments = [];
+        for (let post of posts) {
+            const countComments = await CommentModel.countDocuments({
+                post: post._id,
+            }).exec();
+            postsAndCountOfComments.push({ ...post._doc, countComments });
+        }
+        res.json(postsAndCountOfComments);    } catch (error) {
         console.log(error)
         res.status(500).json({
             message: "Couldn't get the articles",

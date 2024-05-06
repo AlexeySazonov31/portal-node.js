@@ -19,5 +19,5 @@ export const postCreateValidation = [
     body("imageUrl", "Incorrect url to post picture").isString(),
 ];
 export const commentCreateValidation = [
-    body("text", "Input post text").isLength({ min: 1 }).isString(),
+    body("text", "Input comment text").isLength({ min: 1 }).isString(),
 ];
