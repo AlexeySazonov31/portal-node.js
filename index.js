@@ -25,7 +25,7 @@ const postsStorage = multer.diskStorage({
 })
 const avatarsStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "./uploads/avatars");
+        cb(null, "uploads/avatars");
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname);
@@ -52,14 +52,15 @@ app.post("/upload/post", checkAuth, uploadPost.single("image"), (req, res) => {
         url: req.file.originalname,
     })
 });
-app.post("/upload/avatar", checkAuth, uploadAvatar.single("image"), (req, res) => {
+app.post("/upload/avatar", uploadAvatar.single("image"), (req, res) => {
     res.json({
-        url: `/uploads/avatars/${req.file.originalname}`,
+        url: req.file.originalname,
     })
 });
 
 app.get("/posts", PostController.getAll);
 app.get("/posts/popular", PostController.getPopular);
+app.get("/posts-by-tag/:tag", PostController.getAllByTag);
 app.get("/tags", PostController.getLastTags);
 app.get("/posts/:id", PostController.getOne);
 
