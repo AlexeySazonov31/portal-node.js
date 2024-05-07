@@ -16,6 +16,18 @@ export const getCommentsByPost = async (req, res) => {
     }
 }
 
+export const getLastComments = async (req, res) => {
+    try {
+        const comments = await CommentModel.find().sort({"createdAt": -1}).limit(5).populate("user", "fullName avatarUrl").exec();
+        res.json(comments);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            message: "Couldn't get the commentaries",
+        })
+    }
+}
+
 export const createComment = async (req, res) => {
     try {
         const postId = req.params.id;

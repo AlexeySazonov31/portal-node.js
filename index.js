@@ -5,7 +5,7 @@ import cors from "cors";
 import 'dotenv/config'
 
 import { registerValidation, loginValidation, postCreateValidation, commentCreateValidation } from "./validations.js";
-import { UserController, PostController, CommController } from "./controllers/index.js";
+import { UserController, PostController, CommentController } from "./controllers/index.js";
 import { checkAuth, handleValidationsErrors } from "./utils/index.js";
 
 mongoose
@@ -68,9 +68,10 @@ app.post("/posts", checkAuth, postCreateValidation, handleValidationsErrors, Pos
 app.patch("/posts/:id", checkAuth, postCreateValidation, handleValidationsErrors, PostController.update);
 app.delete("/posts/:id", checkAuth, PostController.remove);
 
-app.get("/comments/:id", CommController.getCommentsByPost);
-app.post("/comments/:id", checkAuth, commentCreateValidation, handleValidationsErrors, CommController.createComment);
-app.delete("/comments/:id", checkAuth, CommController.removeComment);
+app.get("/comments/:id", CommentController.getCommentsByPost);
+app.get("/comments", CommentController.getLastComments);
+app.post("/comments/:id", checkAuth, commentCreateValidation, handleValidationsErrors, CommentController.createComment);
+app.delete("/comments/:id", checkAuth, CommentController.removeComment);
 
 
 
